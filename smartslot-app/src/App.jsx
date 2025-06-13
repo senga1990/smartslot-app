@@ -13,12 +13,13 @@ function App() {
         justifyContent: 'center',
         fontFamily: 'sans-serif',
         color: '#fff',
-        textAlign: 'center'
+        textAlign: 'center',
+        backgroundImage: "url('/bgnynight.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="cosmic-bg" />
-      <div className="stars" />
-
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div className="logo-glow" />
         <img
@@ -39,7 +40,7 @@ function App() {
         </h1>
 
         <p style={{ fontSize: '1rem', marginBottom: '30px' }}>
-          Your AI appointment assistant
+          <span className="blink">Initializing system...</span>
         </p>
 
         <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
