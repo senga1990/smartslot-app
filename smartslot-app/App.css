@@ -1,0 +1,270 @@
+/* Загальні стилі */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: black;
+  overflow-y: auto; /* ✅ дозволяє прокрутку вниз */
+}
+
+/* 🌌 Зірковий шар */
+.sky-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.6;
+  width: 2px;
+  height: 2px;
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* 🌟 Підсвітка логотипу */
+.logo-glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(0,123,255,0.5) 0%, transparent 80%);
+  filter: blur(50px);
+  z-index: 1;
+}
+
+.logo:hover {
+  transform: scale(1.05) rotate(2deg);
+  transition: transform 0.4s ease;
+}
+
+/* ✅ Плавна анімація підстрибування логотипа */
+.logo-spin {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ✨ Glow-заголовок */
+h1 {
+  text-shadow: 0 0 10px #1e90ff, 0 0 20px #60a5fa, 0 0 40px #007bff;
+  transition: text-shadow 0.4s ease-in-out;
+}
+
+/* ⌨️ Мигаючий курсор */
+.blink {
+  border-right: 2px solid #1e90ff;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: blink-caret 1s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: #1e90ff; }
+}
+
+/* Glass-картка */
+.welcome-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 24px 32px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  animation: fade-in 1s ease-out;
+}
+
+/* Ефект появи */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Масштабний контейнер */
+.scale-wrapper {
+  transform: scale(0.8); /* ✅ ще менший масштаб */
+  transform-origin: top center;
+  margin-top: -20px; /* ✅ менший зсув */
+}
+
+/* Центрування */
+.container-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 130vh; /* ✅ запас висоти, щоб не обрізалося */
+  position: relative;
+  z-index: 2;
+}
+
+/* Світловий відблиск вікна */
+.window-glow::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  box-shadow: inset 0 0 80px rgba(0, 153, 255, 0.08);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Кнопки */
+button {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Primary */
+button.primary {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+  animation: glow-pulse 2s infinite;
+}
+
+@keyframes glow-pulse {
+  0% { box-shadow: 0 0 5px #007bff; }
+  50% { box-shadow: 0 0 20px #007bff; }
+  100% { box-shadow: 0 0 5px #007bff; }
+}
+
+/* Secondary */
+button.secondary {
+  background-color: #333;
+  color: #eee;
+  border: none;
+  box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+}
+
+/* Текст наче у консолі */
+.console-text {
+  font-family: 'Courier New', monospace;
+  color: #00ffcc;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  text-shadow: 0 0 6px #00ffcc66;
+}
+
+/* Медіа-запит для мобільних пристроїв */
+@media (max-width: 768px) {
+  /* Зменшуємо розмір логотипу */
+  .floating-logo {
+    width: 70px;
+    height: 70px;
+  }
+
+  /* Зменшення шрифтів та відступів для кнопок */
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .console-text {
+    font-size: 0.75rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* Зміна розміру фону */
+  .sky-layer {
+    height: 50%;
+  }
+
+  /* Центрування вмісту */
+  .container-centered {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  /* Зменшення масштабування */
+  .scale-wrapper {
+    transform: scale(0.75); /* Зменшений масштаб для мобільних пристроїв */
+    margin-top: -10px;
+  }
+}
+.plan-generator {
+  padding: 40px 20px;
+  text-align: center;
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.plan-generator .title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #00e6e6;
+}
+
+.plan-generator .subtitle {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  color: #ccc;
+}
+
+.plan-generator .input-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.plan-generator input {
+  padding: 12px 20px;
+  width: 300px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+.plan-generator button {
+  padding: 12px 20px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.plan-generator button:hover {
+  background-color: #005fcc;
+}

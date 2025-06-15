@@ -14,10 +14,27 @@ const TypingEffect = ({ text = "", speed = 60 }) => {
   }, [text, speed]);
 
   return (
-    <pre style={{ color: "#00ffcc", fontFamily: "Courier New", fontSize: "0.85rem", whiteSpace: "pre-wrap" }}>
-      {displayedText}
-      <span className="blink">|</span>
-    </pre>
+    <>
+      <pre style={{
+        color: "#00ffcc",
+        fontFamily: "Courier New",
+        fontSize: "0.85rem",
+        whiteSpace: "pre-wrap"
+      }}>
+        {displayedText}
+        <span className="blink">|</span>
+      </pre>
+
+      <style>{`
+        .blink {
+          animation: blinkCursor 1s step-start infinite;
+        }
+
+        @keyframes blinkCursor {
+          50% { opacity: 0; }
+        }
+      `}</style>
+    </>
   );
 };
 

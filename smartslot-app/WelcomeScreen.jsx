@@ -1,31 +1,64 @@
+import React, { useState, useEffect } from "react";
+import ParticlesBackground from "./ParticlesBackground";
+import { motion } from "framer-motion";
+
 export default function WelcomeScreen() {
+  const [typedText, setTypedText] = useState("");
+  const fullText = "Initializing system...";
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      setTypedText((prev) => prev + fullText.charAt(index));
+      index++;
+      if (index >= fullText.length) clearInterval(interval);
+    }, 60);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div
       style={{
-        backgroundImage: "url('/bgnynight.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        width: "100%",
-        height: "100vh",
         position: "relative",
+        width: "100%",
+        minHeight: "130vh",
+        overflow: "hidden",
+        transform: "scale(0.75)", // ✅ Масштаб всього
+        transformOrigin: "top center",
       }}
     >
-      {/* Темний шар */}
+      {/* ✅ Фон через <img> */}
+      <img
+        src="/bgnynight.png"
+        alt="background"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "auto",
+          zIndex: 0,
+        }}
+      />
+
+      {/* Темне затемнення */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           backgroundColor: "rgba(0, 0, 0, 0.6)",
-          zIndex: 0,
+          zIndex: 1,
         }}
-      ></div>
+      />
+
+      <ParticlesBackground />
 
       {/* Контент */}
       <div
         style={{
           position: "relative",
-          zIndex: 1,
-          height: "100%",
+          zIndex: 2,
+          minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -35,21 +68,56 @@ export default function WelcomeScreen() {
           padding: "1rem",
         }}
       >
-        <img
+        {/* Логотип */}
+        <motion.img
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
           src="/logo.png"
           alt="SmartSlot Logo"
-          style={{ width: "96px", height: "96px", marginBottom: "1.5rem" }}
+          className="floating-logo"
+          style={{
+            width: "96px",
+            height: "96px",
+            marginBottom: "1.5rem",
+            filter: "drop-shadow(0 0 8px #60a5fa)",
+          }}
         />
 
-        <h1 style={{ fontSize: "2.5rem", fontWeight: "bold", marginBottom: "1rem" }}>
+        {/* Заголовок */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          style={{
+            fontSize: "2rem",
+            marginBottom: "10px",
+            textShadow: "0 0 8px #60a5fa, 0 0 16px #60a5fa, 0 0 24px #3b82f6",
+          }}
+        >
           Welcome to <span style={{ color: "#60a5fa" }}>SmartSlot</span>
-        </h1>
+        </motion.h1>
 
-        <p style={{ fontSize: "1.25rem", marginBottom: "2rem" }}>
-          Your AI appointment assistant
-        </p>
+        {/* Ефект набору тексту */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          style={{ fontSize: "1.25rem", marginBottom: "2rem" }}
+        >
+          <span style={{ fontFamily: "Courier New, monospace" }}>
+            {typedText}
+            <span className="cursor">|</span>
+          </span>
+        </motion.p>
 
-        <div style={{ display: "flex", gap: "1rem" }}>
+        {/* Кнопки */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.1 }}
+          style={{ display: "flex", gap: "1rem" }}
+        >
           <button
             style={{
               padding: "0.75rem 1.5rem",
@@ -59,6 +127,7 @@ export default function WelcomeScreen() {
               borderRadius: "0.75rem",
               fontWeight: "600",
               cursor: "pointer",
+              boxShadow: "0 0 10px #3b82f6",
             }}
           >
             Login
@@ -72,12 +141,34 @@ export default function WelcomeScreen() {
               borderRadius: "0.75rem",
               fontWeight: "600",
               cursor: "pointer",
+              boxShadow: "0 0 10px #fff",
             }}
           >
             Register
           </button>
-        </div>
+        </motion.div>
       </div>
+
+      <style>{`
+        @keyframes float {
+          0% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0); }
+        }
+
+        .floating-logo {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .cursor {
+          animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
