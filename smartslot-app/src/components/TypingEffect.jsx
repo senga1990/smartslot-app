@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-const TypingEffect = ({ text = "", speed = 60 }) => {
-  const [displayedText, setDisplayedText] = useState("");
+const TypingEffect = ({ text = '', speed = 60 }) => {
+  const [displayedText, setDisplayedText] = useState('');
 
   useEffect(() => {
     let index = 0;
@@ -10,17 +10,20 @@ const TypingEffect = ({ text = "", speed = 60 }) => {
       index++;
       if (index >= text.length) clearInterval(interval);
     }, speed);
+
     return () => clearInterval(interval);
   }, [text, speed]);
 
   return (
     <>
-      <pre style={{
-        color: "#00ffcc",
-        fontFamily: "Courier New",
-        fontSize: "0.85rem",
-        whiteSpace: "pre-wrap"
-      }}>
+      <pre
+        style={{
+          color: '#00ffcc',
+          fontFamily: 'Courier New',
+          fontSize: '0.85rem',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
         {displayedText}
         <span className="blink">|</span>
       </pre>
@@ -31,7 +34,9 @@ const TypingEffect = ({ text = "", speed = 60 }) => {
         }
 
         @keyframes blinkCursor {
-          50% { opacity: 0; }
+          50% {
+            opacity: 0;
+          }
         }
       `}</style>
     </>
