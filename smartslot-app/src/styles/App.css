@@ -32,4 +32,20 @@
   transition: text-shadow 0.3s ease;
 }
 
-/* Видалено cosmic-bg і .stars для коректного backgroundImage */
+/* Видалено cosmic-bg і .stars для коректного backgroundImage */.auth-button {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff !important;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 8px;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 300px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.auth-button:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}

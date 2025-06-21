@@ -1,13 +1,27 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/WelcomeScreen.css';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Logging in with:', email, password);
+    setError('');
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('✅ Logged in:', userCredential.user);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('❌ Login error:', err);
+      setError('Invalid email or password');
+    }
   };
 
   return (
@@ -31,13 +45,13 @@ const LoginForm = () => {
           required
         />
 
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
         <button type="submit">Login</button>
 
         <div className="login-options">
-  
-
-  <a href="#">📱 Use phone number</a>
-</div>
+          <a href="/phone">📱 Use phone number</a>
+        </div>
       </form>
     </div>
   );

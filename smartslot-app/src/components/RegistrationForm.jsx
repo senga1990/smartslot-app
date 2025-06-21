@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/WelcomeScreen.css';
+import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, provider } from '../firebase';
 
 export default function RegistrationForm() {
   const [email, setEmail] = useState('');
@@ -9,20 +11,37 @@ export default function RegistrationForm() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     if (!email || !password || !repeatPassword) {
-      return setError('Please fill out all fields');
+      return setError('Fill all fields');
     }
-
     if (password !== repeatPassword) {
       return setError('Passwords do not match');
     }
 
-    setError('');
-    console.log('Registering:', email, password);
-    // TODO: Firebase registration logic here
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('User created:', result.user);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Email registration error:', err);
+      setError(err.message);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log('Google user:', user);
+      alert(`Welcome, ${user.displayName}!`);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Google login error:', error);
+      setError('Google login failed');
+    }
   };
 
   return (
@@ -37,7 +56,6 @@ export default function RegistrationForm() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-
         <input
           type="password"
           placeholder="Password"
@@ -45,7 +63,6 @@ export default function RegistrationForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
         <input
           type="password"
           placeholder="Repeat Password"
@@ -54,25 +71,28 @@ export default function RegistrationForm() {
           required
         />
 
-        {error && (
-          <p style={{ color: '#ff8080', fontSize: '14px', margin: 0 }}>{error}</p>
-        )}
+        {error && <p style={{ color: '#ff8080', fontSize: '14px' }}>{error}</p>}
 
-        <button type="submit">Register</button>
+        <button type="submit" className="auth-button">
+          Register with Email
+        </button>
 
-        <div className="login-options">
-          <a href="#" onClick={() => navigate('/login')}>
+        <div className="login-options" style={{ marginTop: '12px' }}>
+          <button type="button" onClick={() => navigate('/login')} className="text-button">
             🔑 Already have an account?
-          </a>
+          </button>
 
-          <a href="#" className="google-button">
-  <img
-    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-    alt="Google"
-  />
-  Continue with Google
-</a>
+          <button type="button" className="google-button" onClick={handleGoogleLogin}>
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google"
+            />
+            Continue with Google
+          </button>
 
+          <p style={{ marginTop: '10px', textAlign: 'center' }}>
+            📱 Prefer phone? <Link to="/phone">Register by phone</Link>
+          </p>
         </div>
       </form>
     </div>
