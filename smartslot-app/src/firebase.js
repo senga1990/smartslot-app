@@ -6,27 +6,27 @@ import {
   setPersistence,
 } from "firebase/auth";
 
-// 🔧 Конфігурація Firebase
+// 🔑 Конфігурація Firebase з нового проєкту (smartslot-clean)
 const firebaseConfig = {
-  apiKey: "AIzaSyBbd8QBVlJN0qOL30K2XNBsarxiA1iejN4",
+  apiKey: "AIzaSyBbd8QBVJ1N8qQL30K2XNBsarxiA1iejN4",
   authDomain: "smartslot-app.firebaseapp.com",
   projectId: "smartslot-app",
   storageBucket: "smartslot-app.appspot.com",
   messagingSenderId: "461946962613",
-  appId: "1:461946962613:web:e5952578d8aea7482f74fc",
-  measurementId: "G-HFZFLH83MF",
+  appId: "1:461946962613:web:9b40096f23bddb42f74fc",
+  measurementId: "G-G2WMK4BX0W",
 };
 
-// 🔥 Ініціалізація Firebase App
+// 🚀 Ініціалізація Firebase
 const app = initializeApp(firebaseConfig);
 
-// 🔐 Ініціалізація авторизації
+// 🔐 Авторизація
 export const auth = getAuth(app);
 
-// 🔄 Встановлення локального зберігання (важливо для реального OTP)
-setPersistence(auth, browserLocalPersistence).catch((error) => {
-  console.error("❌ Persistence error:", error);
-});
+// 🧠 Google Sign-In провайдер
+export const googleProvider = new GoogleAuthProvider();
 
-// 🌍 Google Sign-In
-export const provider = new GoogleAuthProvider();
+// 💾 Постійна авторизація в браузері
+setPersistence(auth, browserLocalPersistence);
+
+export default app;

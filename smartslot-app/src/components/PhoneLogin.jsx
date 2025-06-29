@@ -1,114 +1,97 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-} from "firebase/auth";
-import { auth } from "../firebase";
 
 export default function PhoneLogin() {
-  const navigate = useNavigate();
-
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // 🔒 Примусово вимикаємо тестовий режим
-    auth.settings.appVerificationDisabledForTesting = false;
-
-    if (!window.recaptchaVerifier) {
-      try {
-        window.recaptchaVerifier = new RecaptchaVerifier(
-          "recaptcha-container",
-          {
-            size: "invisible",
-            callback: (response) => {
-              console.log("✅ reCAPTCHA solved");
-            },
-            "expired-callback": () => {
-              console.warn("⚠️ reCAPTCHA expired");
-            },
-          },
-          auth
-        );
-      } catch (e) {
-        console.error("❌ reCAPTCHA init failed:", e);
-      }
+    if (window.grecaptcha && document.getElementById("recaptcha-container").childNodes.length === 0) {
+      window.grecaptcha.render("recaptcha-container", {
+        sitekey: "6LdILG8rAAAAAJcUHlEiesgL3HNnhPsUMyxsG0AA",
+        callback: () => console.log("✅ CAPTCHA passed"),
+      });
     }
   }, []);
 
-  const handleSendCode = async (e) => {
-    e.preventDefault();
+  const handleSendCode = async () => {
     setError("");
-    setMessage("");
-
-    if (!phone.startsWith("+1")) {
-      return setError("Phone number must start with +1");
-    }
-
     try {
-      const appVerifier = window.recaptchaVerifier;
-      const result = await signInWithPhoneNumber(auth, phone, appVerifier);
-      setConfirmationResult(result);
-      setMessage("✅ Code sent!");
-    } catch (err) {
-      console.error("❌ SMS sending error:", err);
-      setError("Failed to send SMS. Please try again.");
-
-      // Скинути reCAPTCHA при помилці
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = null;
+      const token = window.grecaptcha.getResponse();
+      if (!token) {
+        setError("Please complete the CAPTCHA.");
+        return;
       }
+
+      await axios.post("http://localhost:4000/send-code", { phone, token });
+      setOtpSent(true);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to send code. Try again.");
     }
   };
 
   const handleVerifyCode = async () => {
-    if (!otp) return setError("Please enter the code");
-
+    setError("");
     try {
-      const result = await confirmationResult.confirm(otp);
-      setMessage("✅ Verified: " + result.user.phoneNumber);
-      navigate("/dashboard");
+      const res = await axios.post("http://localhost:4000/verify-code", {
+        phone,
+        code: otp,
+      });
+
+      if (res.data.valid) {
+        alert("✅ Phone verified!");
+        navigate("/dashboard");
+      } else {
+        setError("❌ Invalid code. Try again.");
+      }
     } catch (err) {
-      console.error("❌ OTP verification failed:", err);
-      setError("Invalid code. Please try again.");
+      console.error(err);
+      setError("Verification failed. Try again.");
     }
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>📱 Phone Login</h2>
+    <div style={{ maxWidth: 400, margin: "auto", padding: 20, color: "white" }}>
+      <h2>Sign in with Phone</h2>
 
-      <form onSubmit={handleSendCode}>
-        <input
-          type="text"
-          placeholder="+1..."
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          required
-        />
-        <button type="submit">Send Code</button>
-        <div id="recaptcha-container"></div>
-      </form>
+      <input
+        type="tel"
+        placeholder="+1234567890"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        style={{ width: "100%", padding: 10, marginBottom: 10 }}
+      />
 
-      {confirmationResult && (
+      <div id="recaptcha-container" style={{ marginBottom: 10 }}></div>
+
+      {!otpSent ? (
+        <button onClick={handleSendCode} style={{ width: "100%", padding: 10 }}>
+          Send Code
+        </button>
+      ) : (
         <>
           <input
             type="text"
             placeholder="Enter OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
+            style={{ width: "100%", padding: 10, marginTop: 10 }}
           />
-          <button onClick={handleVerifyCode}>Verify</button>
+          <button
+            onClick={handleVerifyCode}
+            style={{ width: "100%", padding: 10, marginTop: 10 }}
+          >
+            Verify Code
+          </button>
         </>
       )}
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {message && <p style={{ color: "green" }}>{message}</p>}
+      {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
     </div>
   );
 }

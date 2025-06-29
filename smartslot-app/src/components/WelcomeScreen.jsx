@@ -8,18 +8,19 @@ export default function WelcomeScreen() {
 
   const handleLogin = () => navigate('/login');
   const handleRegister = () => navigate('/register');
+  const handlePhoneLogin = () => navigate('/phone');
 
   return (
     <div className="welcome-container">
       <div className="logo-glow"></div>
 
       <motion.img
-  src="/logo.png"
-  alt="Logo"
-  className="logo-image"
-  animate={{ y: [0, -10, 0] }}
-  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-/>
+        src="/logo.png"
+        alt="Logo"
+        className="logo-image"
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
 
       <motion.div
         className="logo-text"
@@ -39,6 +40,9 @@ export default function WelcomeScreen() {
       >
         <button className="btn" onClick={handleLogin}>Login</button>
         <button className="btn" onClick={handleRegister}>Register</button>
+        <button className="btn btn-secondary" onClick={handlePhoneLogin}>
+          Phone Login
+        </button>
       </motion.div>
 
       <motion.button
@@ -47,7 +51,6 @@ export default function WelcomeScreen() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
         onClick={() => {
-          // тут може бути scroll або посилання
           window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
         }}
       >
