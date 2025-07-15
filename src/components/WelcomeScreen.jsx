@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router‑dom";
+import { useNavigate } from "react-router-dom";
 import GoogleLoginButton from "./GoogleLoginButton";
 import "../styles/WelcomeScreen.css";
 
@@ -28,7 +28,7 @@ export default function WelcomeScreen() {
         transition={{ delay: 0.4, duration: 1 }}
       >
         <h1>SmartSlot</h1>
-        <p>AI‑powered slot optimization</p>
+        <p>AI-powered slot optimization</p>
       </motion.div>
 
       {/* група головних кнопок */}
@@ -45,14 +45,14 @@ export default function WelcomeScreen() {
           Register
         </button>
         <button className="btn" onClick={() => navigate("/phone")}>
-          Phone&nbsp;Login
+          Phone Login
         </button>
 
-        {/* Google OAuth — у тому ж блоці */}
+        {/* Google OAuth — у тому ж блоці */}
         <GoogleLoginButton />
       </motion.div>
 
-      {/* окрема кнопка‑посилання на демо */}
+      {/* окрема кнопка-посилання на демо */}
       <motion.button
         className="explore-btn"
         initial={{ opacity: 0 }}
@@ -60,7 +60,7 @@ export default function WelcomeScreen() {
         transition={{ delay: 1.2, duration: 1 }}
         onClick={() => navigate("/demo")}
       >
-        Explore&nbsp;Demo
+        Explore Demo
       </motion.button>
     </div>
   );
