@@ -8,10 +8,10 @@ export default function WelcomeScreen() {
 
   return (
     <div className="welcome-container">
-      {/* розмитий сяйнистий круг */}
+      {/* 💡 Сяйнистий круг — фон для логотипа */}
       <div className="logo-glow"></div>
 
-      {/* логотип із плавним підстрибуванням */}
+      {/* 🖼️ Логотип з анімацією підстрибування */}
       <motion.img
         src="/logo.png"
         alt="SmartSlot logo"
@@ -20,7 +20,7 @@ export default function WelcomeScreen() {
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* назва та підзаголовок */}
+      {/* 📝 Назва додатку + опис */}
       <motion.div
         className="logo-text"
         initial={{ opacity: 0 }}
@@ -31,28 +31,20 @@ export default function WelcomeScreen() {
         <p>AI-powered slot optimization</p>
       </motion.div>
 
-      {/* група головних кнопок */}
+      {/* 🔘 Головні кнопки логіну/реєстрації */}
       <motion.div
         className="button-group"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8, duration: 1 }}
       >
-        <button className="btn" onClick={() => navigate("/login")}>
-          Login
-        </button>
-        <button className="btn" onClick={() => navigate("/register")}>
-          Register
-        </button>
-        <button className="btn" onClick={() => navigate("/phone")}>
-          Phone Login
-        </button>
-
-        {/* Google OAuth — у тому ж блоці */}
+        <button className="btn" onClick={() => navigate("/login")}>Login</button>
+        <button className="btn" onClick={() => navigate("/register")}>Register</button>
+        <button className="btn" onClick={() => navigate("/phone")}>Phone Login</button>
         <GoogleLoginButton />
       </motion.div>
 
-      {/* окрема кнопка-посилання на демо */}
+      {/* 🧭 Окрема кнопка-посилання на демо */}
       <motion.button
         className="explore-btn"
         initial={{ opacity: 0 }}

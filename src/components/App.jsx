@@ -1,7 +1,6 @@
 import "../styles/App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WelcomeScreen from "./WelcomeScreen";
-import GoogleLoginButton from "./GoogleLoginButton";
 import EmailLogin from "./EmailLogin";
 import Dashboard from "./Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
@@ -17,16 +16,8 @@ function App() {
 
       <main className="p-4 flex flex-col items-center gap-6">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <WelcomeScreen />
-                <GoogleLoginButton />
-                <EmailLogin />
-              </>
-            }
-          />
+          <Route path="/" element={<WelcomeScreen />} />
+          <Route path="/login" element={<EmailLogin />} />
           <Route
             path="/dashboard"
             element={
