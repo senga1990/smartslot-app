@@ -1,58 +1,76 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import GoogleLoginButton from "./GoogleLoginButton";
+import LanguageSwitcher from "./LanguageSwitcher";
 import "../styles/WelcomeScreen.css";
 
 export default function WelcomeScreen() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="welcome-container">
-      {/* 💡 Сяйнистий круг — фон для логотипа */}
+      {/* 🌐 Language button (вгорі зліва) */}
+      <div style={{ position: "absolute", top: "1rem", left: "1rem", zIndex: 50 }}>
+        <LanguageSwitcher />
+      </div>
+
+      {/* 🔆 Logo glow effect */}
       <div className="logo-glow"></div>
 
-      {/* 🖼️ Логотип з анімацією підстрибування */}
+      {/* 🧠 Logo image */}
       <motion.img
         src="/logo.png"
         alt="SmartSlot logo"
-        className="logo-image"
+        className="logo-image mx-auto mb-4"
         animate={{ y: [0, -10, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* 📝 Назва додатку + опис */}
+      {/* 🧠 Slogan */}
       <motion.div
-        className="logo-text"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.4, duration: 1 }}
+        transition={{ delay: 0.3, duration: 1 }}
       >
-        <h1>SmartSlot</h1>
-        <p>AI-powered slot optimization</p>
+        <p className="ai-powered-text mt-2">
+          {t("slogan", "AI-powered slot optimization")}
+        </p>
       </motion.div>
 
-      {/* 🔘 Головні кнопки логіну/реєстрації */}
+      {/* 🔐 Login buttons */}
       <motion.div
-        className="button-group"
+        className="flex flex-col items-center gap-3 mt-6 w-full max-w-xs"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 1 }}
+        transition={{ delay: 0.6, duration: 1 }}
       >
-        <button className="btn" onClick={() => navigate("/login")}>Login</button>
-        <button className="btn" onClick={() => navigate("/register")}>Register</button>
-        <button className="btn" onClick={() => navigate("/phone")}>Phone Login</button>
-        <GoogleLoginButton />
+        <button
+          className="google-button"
+          onClick={() => navigate("/email-login")}
+        >
+          <img
+            src="https://img.icons8.com/ios-filled/50/ffffff/new-post.png"
+            alt="email"
+            style={{ width: 20, height: 20, marginRight: 8 }}
+          />
+          {t("loginWithEmail", "Login via Email")}
+        </button>
+
+        {/* Передаємо текст для кнопки Google */}
+        <GoogleLoginButton text={t("loginWithGoogle", "Login via Google")} />
       </motion.div>
 
-      {/* 🧭 Окрема кнопка-посилання на демо */}
+      {/* 🔍 Explore demo */}
       <motion.button
-        className="explore-btn"
+        className="explore-btn mt-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 1 }}
         onClick={() => navigate("/demo")}
       >
-        Explore Demo
+        {t("exploreDemo", "Explore Demo")}
       </motion.button>
     </div>
   );

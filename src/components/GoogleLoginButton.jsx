@@ -1,45 +1,48 @@
-import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // Імпортуємо useTranslation для перекладів
 
 export default function GoogleLoginButton() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Використовуємо для перекладів
 
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const handleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: {
+            Authorization: `Bearer ${tokenResponse.access_token}`,
+          },
+        });
 
-  if (!clientId) {
-    console.error("❌ Google Client ID is missing. Check your .env file.");
-    return (
-      <div style={{ color: "red", textAlign: "center", marginTop: "1rem" }}>
-        ⚠️ Помилка: client_id відсутній. Перевір `.env` файл.
-      </div>
-    );
-  }
+        const user = res.data;
+
+        login({
+          name: user.name,
+          email: user.email,
+          picture: user.picture,
+          provider: "google",
+        });
+
+        navigate("/dashboard");
+      } catch (err) {
+        console.error("❌ Google профіль помилка:", err);
+      }
+    },
+    onError: () => console.error("❌ Google OAuth помилка"),
+  });
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-      <GoogleLogin
-        onSuccess={(cred) => {
-          try {
-            const decoded = jwtDecode(cred.credential);
-            if (!decoded.email) throw new Error("No email in JWT");
-            login({
-              name: decoded.name,
-              email: decoded.email,
-              picture: decoded.picture,
-              provider: "google",
-            });
-            navigate("/dashboard");
-          } catch (err) {
-            console.error("❌ Помилка при обробці токена Google:", err);
-          }
-        }}
-        onError={() => console.error("❌ Google OAuth Failed")}
-        theme="filled_black"
-        width="100%"
+    <button onClick={handleLogin} className="btn google-button">
+      <img
+        src="https://developers.google.com/identity/images/g-logo.png"
+        alt="Google"
+        className="google-icon"
       />
-    </div>
+      <span>{t("loginWithGoogle", "Login via Google")}</span> {/* Використовуємо переклад */}
+    </button>
   );
 }

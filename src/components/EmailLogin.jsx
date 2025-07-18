@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 export default function EmailLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState("login"); // або "register"
+  const [mode, setMode] = useState("login");
   const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -23,36 +23,79 @@ export default function EmailLogin() {
   };
 
   return (
-    <div className="max-w-sm mx-auto p-4 border rounded shadow">
-      <h2 className="text-xl font-semibold mb-4 text-center">
-        {mode === "login" ? "Login" : "Register"}
+    <div
+      className="welcome-container"
+      style={{
+        maxWidth: "360px",
+        width: "100%",
+        padding: "24px",
+        background: "rgba(255, 255, 255, 0.05)",
+        borderRadius: "16px",
+        backdropFilter: "blur(16px)",
+        boxShadow: "0 4px 24px rgba(0, 0, 0, 0.4)",
+        color: "white",
+        zIndex: 10,
+      }}
+    >
+      <h2 style={{ fontSize: "22px", marginBottom: "16px", fontWeight: "600" }}>
+        {mode === "login" ? "Увійти через Email" : "Зареєструватися"}
       </h2>
-      {error && <p className="text-red-600 mb-3 text-center">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-3">
+
+      {error && (
+        <p style={{ color: "#ff6666", marginBottom: "12px", textAlign: "center" }}>
+          {error}
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-2 border rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          style={{
+            padding: "12px",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.2)",
+            background: "rgba(255,255,255,0.08)",
+            color: "white",
+            backdropFilter: "blur(8px)",
+            outline: "none",
+          }}
         />
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 border rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          style={{
+            padding: "12px",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.2)",
+            background: "rgba(255,255,255,0.08)",
+            color: "white",
+            backdropFilter: "blur(8px)",
+            outline: "none",
+          }}
         />
-        <button className="w-full bg-blue-600 text-white py-2 rounded">
+        <button type="submit" className="btn">
           {mode === "login" ? "Login" : "Register"}
         </button>
       </form>
-      <div className="text-center mt-3">
+
+      <div style={{ textAlign: "center", marginTop: "16px" }}>
         <button
           onClick={() => setMode(mode === "login" ? "register" : "login")}
-          className="text-sm text-blue-500 underline"
+          style={{
+            background: "none",
+            border: "none",
+            color: "#90cdf4",
+            textDecoration: "underline",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
         >
           {mode === "login" ? "New user? Register" : "Already registered? Login"}
         </button>
