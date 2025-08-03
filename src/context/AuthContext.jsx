@@ -11,10 +11,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (user) localStorage.setItem("user", JSON.stringify(user));
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    }
   }, [user]);
 
-  const login = (userData) => setUser(userData);
+  // ✅ login приймає обʼєкт { name, email, ... }
+  const login = (userData) => {
+    if (userData?.email) {
+      setUser(userData);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);

@@ -2,14 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../context/AuthContext"; // ⬅️ додано
+import { useAuth } from "../context/AuthContext";
 
-export default function Register() {
+export default function BusinessRegister() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login } = useAuth(); // ⬅️ додано
+  const { login } = useAuth();
 
   const [name, setName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,33 +19,55 @@ export default function Register() {
     e.preventDefault();
     setError("");
 
-    try {
-      const res = await axios.post("/api/register", { name, email, password });
+    if (!name || !companyName || !email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
 
-      if (res.data.name && res.data.email) {
-        // ✅ Зберігаємо користувача в AuthContext
+    try {
+      // Автоматично визначає базовий URL
+      const API_URL = `${
+        import.meta.env.VITE_API_BASE || ""
+      }/api/register-business`;
+
+      const res = await axios.post(API_URL, {
+        name,
+        companyName,
+        email,
+        password,
+      });
+
+      if (res.data?.email && res.data?.name) {
         login({
           name: res.data.name,
           email: res.data.email,
+          companyName: res.data.companyName,
+          accountType: "business",
           provider: "local",
         });
-
         navigate("/dashboard");
+      } else {
+        setError("Unexpected server response.");
       }
     } catch (err) {
-      if (err.response?.data?.error === "Email already registered") {
-        setError(t("emailExists"));
+      console.error("Registration error:", err);
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
       } else {
-        setError("Something went wrong.");
+        setError("Unable to connect to server.");
       }
     }
   };
 
   return (
     <div className="welcome-container">
-      <h2 style={{ color: "#fff", marginBottom: "1rem" }}>{t("title")}</h2>
+      <h2 style={{ color: "#fff", marginBottom: "1rem" }}>
+        {t("registerBusiness")}
+      </h2>
 
-      {error && <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>}
+      {error && (
+        <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
@@ -52,6 +75,14 @@ export default function Register() {
           placeholder={t("name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
+          className="btn"
+        />
+        <input
+          type="text"
+          placeholder={t("companyName")}
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
           required
           className="btn"
         />
@@ -75,15 +106,6 @@ export default function Register() {
           {t("register")}
         </button>
       </form>
-
-      <div className="flex flex-col gap-3 mt-4">
-        <button className="btn" onClick={() => navigate("/register")}>
-          {t("register")}
-        </button>
-        <button className="btn" onClick={() => navigate("/business-register")}>
-          {t("registerBusiness")}
-        </button>
-      </div>
 
       <p style={{ marginTop: "1rem", color: "#ccc" }}>
         {t("already")}{" "}

@@ -24,33 +24,33 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { name, email, password } = req.body;
+  const { name, companyName, email, password } = req.body;
 
-  // Перевірка обов’язкових полів
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: "Name, email and password are required" });
+  // Перевірка заповнених полів
+  if (!name || !companyName || !email || !password) {
+    return res.status(400).json({ error: "All fields are required" });
   }
 
-  // Перевіряємо, чи вже є користувач з таким email
+  // Перевірка, чи немає такого email
   const users = await readUsers();
   if (users.find((u) => u.email === email)) {
     return res.status(409).json({ error: "Email already registered" });
   }
 
-  // Хешуємо пароль
+  // Хешування паролю
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  // Додаємо нового користувача
   const newUser = {
     name,
+    companyName,
     email,
     password: hashedPassword,
-    accountType: "standard",
+    accountType: "business",
   };
 
   users.push(newUser);
   await writeUsers(users);
 
-  // Повертаємо відповідь
-  res.status(201).json({ name, email });
+  // Відповідь з підтвердженням
+  res.status(201).json({ name, email, companyName });
 }

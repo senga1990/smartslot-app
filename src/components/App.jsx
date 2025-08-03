@@ -7,23 +7,25 @@ import ProtectedRoute from "./ProtectedRoute";
 import LogoutButton from "./LogoutButton";
 import { useAuth } from "../context/AuthContext";
 import Register from "./Register";
+import BusinessRegister from "./BusinessRegister"; // ⬅️ додано
 import LanguageSwitcher from "./LanguageSwitcher";
-import { useTranslation } from "react-i18next";
 
 function AppInner() {
   const location = useLocation();
   const { user } = useAuth();
   const isWelcome = location.pathname === "/";
+  const isDashboard = location.pathname === "/dashboard";
 
   return (
     <div className="app-wrapper">
-      {/* ✅ Хедер тільки на внутрішніх сторінках */}
+      {/* ✅ Хедер тільки на внутрішніх сторінках (крім Welcome) */}
       {!isWelcome && (
         <header className="lang-switcher-bar">
           <h1 className="text-xl font-bold text-white">SmartSlot</h1>
           <div className="lang-switcher-controls">
             <LanguageSwitcher />
-            {user && <LogoutButton />}
+            {/* ✅ Показувати Logout лише якщо користувач є і НЕ на Dashboard */}
+            {user && !isDashboard && <LogoutButton />}
           </div>
         </header>
       )}
@@ -35,6 +37,7 @@ function AppInner() {
           <Route path="/email-login" element={<EmailLogin />} />
           <Route path="/login" element={<EmailLogin />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/business-register" element={<BusinessRegister />} /> {/* ⬅️ новий маршрут */}
           <Route
             path="/dashboard"
             element={

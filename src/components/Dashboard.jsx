@@ -15,7 +15,7 @@ export default function Dashboard() {
   if (!user) {
     return (
       <div className="welcome-container">
-        <h2>{t("dashboard.accessDenied")}</h2>
+        <h2 style={headingStyle}>{t("dashboard.accessDenied")}</h2>
         <button className="btn" onClick={() => navigate("/")}>
           {t("dashboard.goHome")}
         </button>
@@ -24,11 +24,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="welcome-container">
-      <div className="glass-box">
-        <h1 className="logo-text">SmartSlot</h1>
-        <p className="email">{user.email}</p>
-        <h2>{t("dashboard.welcome")}</h2>
+    <div className="welcome-container" style={containerStyle}>
+      <div className="glass-box" style={glassStyle}>
+        <h2 style={headingStyle}>
+          {t("dashboard.welcome")}, {user.name || user.email}!
+        </h2>
+        <p style={emailStyle}>{user.email}</p>
         <button className="btn" onClick={handleLogout}>
           {t("dashboard.logout")}
         </button>
@@ -36,3 +37,38 @@ export default function Dashboard() {
     </div>
   );
 }
+
+// 🔽 Інлайн-стилі
+const containerStyle = {
+  minHeight: "100vh",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "transparent",
+};
+
+const glassStyle = {
+  padding: "32px",
+  borderRadius: "16px",
+  backdropFilter: "blur(18px)",
+  background: "rgba(255, 255, 255, 0.05)",
+  boxShadow: "0 4px 24px rgba(0, 0, 0, 0.5)",
+  textAlign: "center",
+  maxWidth: "360px",
+  width: "100%",
+  color: "white",
+};
+
+const headingStyle = {
+  fontSize: "24px",
+  marginBottom: "12px",
+  fontWeight: "600",
+  textShadow: "0 0 6px rgba(0, 0, 0, 0.6)",
+};
+
+const emailStyle = {
+  fontSize: "14px",
+  marginBottom: "24px",
+  opacity: 0.85,
+  wordBreak: "break-all",
+};
