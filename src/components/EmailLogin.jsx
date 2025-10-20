@@ -7,42 +7,52 @@ import { useTranslation } from "react-i18next";
 export default function EmailLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState("login"); // login або register
+  const [mode, setMode] = useState("login"); // "login" | "register"
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setError("");
+    setLoading(true);
 
     try {
-      const endpoint =
-        mode === "login" ? "/api/login" : "/api/register"; // ✅ Vercel API route
+      const endpoint = mode === "login" ? "/api/login" : "/api/register";
       const res = await axios.post(endpoint, { email, password });
 
-      // ✅ Якщо логін/реєстрація успішна
       if (res.data?.email) {
         login({
           email: res.data.email,
+          name: res.data.name ?? null,
           provider: "local",
+          accountType: res.data.accountType ?? "standard",
         });
         navigate("/dashboard");
       } else {
         setError(t("serverError"));
       }
     } catch (err) {
-      const message = err.response?.data?.error || t("serverError");
-      console.error("⛔ Login/Register error:", message);
+      const message =
+        err?.response?.data?.error ||
+        err?.message ||
+        t("serverError");
+      console.error("⛔ Login/Register error:", err?.response?.data || err);
       setError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="welcome-container" style={containerStyle}>
       <h2 style={titleStyle}>
-        {mode === "login" ? t("loginWithEmail") : t("registerWithEmail")}
+        {mode === "login" ? t("loginWithEmail") : t("register")}
       </h2>
 
       {error && <p style={errorStyle}>{error}</p>}
@@ -55,6 +65,7 @@ export default function EmailLogin() {
           onChange={(e) => setEmail(e.target.value)}
           required
           style={inputStyle}
+          disabled={loading}
         />
         <input
           type="password"
@@ -63,22 +74,21 @@ export default function EmailLogin() {
           onChange={(e) => setPassword(e.target.value)}
           required
           style={inputStyle}
+          disabled={loading}
         />
-        <button type="submit" className="btn">
-          {mode === "login" ? t("login") : t("register")}
+
+        <button type="submit" className="btn" disabled={loading}>
+          {loading ? (t("pleaseWait") || "Please wait...") : mode === "login" ? t("login") : t("register")}
         </button>
       </form>
 
       <div style={{ textAlign: "center", marginTop: "16px" }}>
         <button
-          onClick={() =>
-            setMode(mode === "login" ? "register" : "login")
-          }
+          onClick={() => setMode(mode === "login" ? "register" : "login")}
           style={toggleBtnStyle}
+          disabled={loading}
         >
-          {mode === "login"
-            ? t("newUserRegister")
-            : t("alreadyRegisteredLogin")}
+          {mode === "login" ? t("newUserRegister") : t("alreadyRegisteredLogin")}
         </button>
       </div>
     </div>

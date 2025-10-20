@@ -1,8 +1,30 @@
 {
   "slogan": "AI-powered slot optimization",
+
   "loginWithEmail": "Login via Email",
-  "loginWithGoogle": "Login via Google",
+  "loginWithGoogle": "Login with Google",
   "exploreDemo": "Explore Demo",
+
+  "login": "Login",
   "register": "Register",
-  "registerBusiness": "Register your Business"
+  "registerBusiness": "Register your Business",
+  "alreadyRegisteredLogin": "Already registered? Login",
+  "newUserRegister": "New here? Create an account",
+
+  "name": "Name",
+  "email": "Email",
+  "password": "Password",
+  "companyName": "Company name",
+
+  "serverError": "Something went wrong. Please try again.",
+  "invalidCredentials": "Invalid credentials",
+  "emailAlreadyRegistered": "Email already registered",
+  "allFieldsRequired": "All fields are required",
+  "emailAndPasswordRequired": "Email and password are required",
+
+  "dashboard.welcome": "Welcome, {{name}}!",
+  "dashboard.logout": "Log out",
+  "dashboard.accessDenied": "Access denied",
+  "dashboard.goHome": "Go to home",
+  "dashboard.user": "user"
 }

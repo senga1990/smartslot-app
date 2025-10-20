@@ -1,35 +1,50 @@
+// src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
+const LS_KEY = "smartslot.user";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [ready, setReady] = useState(false); // коли контекст ініціалізовано
 
+  // 1) Ініціалізація з localStorage (безпечний парс)
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) setUser(JSON.parse(raw));
+    } catch (e) {
+      console.warn("Auth init parse failed:", e);
+    } finally {
+      setReady(true);
+    }
   }, []);
 
+  // 2) Синхронізація в localStorage
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
+    try {
+      if (user) localStorage.setItem(LS_KEY, JSON.stringify(user));
+      else localStorage.removeItem(LS_KEY);
+    } catch (e) {
+      console.warn("Auth persist failed:", e);
     }
   }, [user]);
 
-  // ✅ login приймає обʼєкт { name, email, ... }
+  // 3) Публічне API
+  // login очікує: { email, name?, provider?, accountType?, companyName?, preferredLang? }
   const login = (userData) => {
-    if (userData?.email) {
-      setUser(userData);
-    }
+    if (userData && userData.email) setUser(userData);
   };
 
-  const logout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+  const logout = () => setUser(null);
+
+  // ✅ часткове оновлення профілю (для Settings)
+  const updateUser = (patch) => {
+    setUser((prev) => ({ ...(prev || {}), ...(patch || {}) }));
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, ready }}>
       {children}
     </AuthContext.Provider>
   );

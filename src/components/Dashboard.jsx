@@ -1,6 +1,8 @@
+// src/components/Dashboard.jsx
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import ProfileCard from "./ProfileCard";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -11,6 +13,10 @@ export default function Dashboard() {
     logout();
     navigate("/");
   };
+
+  // Акуратний fallback імені:
+  const derivedName =
+    user?.name ?? (user?.email ? user.email.split("@")[0] : t("dashboard.user"));
 
   if (!user) {
     return (
@@ -26,10 +32,16 @@ export default function Dashboard() {
   return (
     <div className="welcome-container" style={containerStyle}>
       <div className="glass-box" style={glassStyle}>
-        <h2 style={headingStyle}>
-          {t("dashboard.welcome")}, {user.name || user.email}!
-        </h2>
-        <p style={emailStyle}>{user.email}</p>
+        {/* локалізований шаблон з плейсхолдером {{name}} */}
+        <h2 style={headingStyle}>{t("dashboard.welcome", { name: derivedName })}</h2>
+
+        {user.email && <p style={emailStyle}>{user.email}</p>}
+
+        {/* ✅ картка профілю */}
+        <div style={{ marginBottom: 16 }}>
+          <ProfileCard />
+        </div>
+
         <button className="btn" onClick={handleLogout}>
           {t("dashboard.logout")}
         </button>
@@ -54,7 +66,7 @@ const glassStyle = {
   background: "rgba(255, 255, 255, 0.05)",
   boxShadow: "0 4px 24px rgba(0, 0, 0, 0.5)",
   textAlign: "center",
-  maxWidth: "360px",
+  maxWidth: "420px", // трохи ширше, щоб картка виглядала краще
   width: "100%",
   color: "white",
 };

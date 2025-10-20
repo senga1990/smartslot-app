@@ -1,8 +1,30 @@
 {
   "slogan": "Оптимізація слотів за допомогою ШІ",
+
   "loginWithEmail": "Увійти через Email",
   "loginWithGoogle": "Увійти через Google",
   "exploreDemo": "Переглянути демо",
+
+  "login": "Увійти",
   "register": "Зареєструватися",
-  "registerBusiness": "Зареєструвати бізнес"
+  "registerBusiness": "Зареєструвати бізнес",
+  "alreadyRegisteredLogin": "Вже маєш акаунт? Увійди",
+  "newUserRegister": "Новий користувач? Створи акаунт",
+
+  "name": "Ім’я",
+  "email": "Email",
+  "password": "Пароль",
+  "companyName": "Назва компанії",
+
+  "serverError": "Сталася помилка. Спробуй ще раз.",
+  "invalidCredentials": "Невірні облікові дані",
+  "emailAlreadyRegistered": "Такий email вже зареєстровано",
+  "allFieldsRequired": "Усі поля є обов’язковими",
+  "emailAndPasswordRequired": "Потрібні email і пароль",
+
+  "dashboard.welcome": "Вітаємо, {{name}}!",
+  "dashboard.logout": "Вийти",
+  "dashboard.accessDenied": "Доступ заборонено",
+  "dashboard.goHome": "На головну",
+  "dashboard.user": "користувач"
 }

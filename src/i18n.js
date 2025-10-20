@@ -1,8 +1,9 @@
+// src/i18n.js
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-// ✅ Імпортуємо всі локалізації
+// Локалі (якщо bundle стане важким — легко перейти на lazy-load)
 import en from "./locales/en.json";
 import uk from "./locales/uk.json";
 import pl from "./locales/pl.json";
@@ -14,9 +15,9 @@ import nl from "./locales/nl.json";
 import ro from "./locales/ro.json";
 import lt from "./locales/lt.json";
 import hr from "./locales/hr.json";
-import zh from "./locales/zh.json";
-import hi from "./locales/hi.json";
-import be from "./locales/be.json";
+import zh from "./locales/zh.json"; // китайська
+import hi from "./locales/hi.json"; // гінді
+import be from "./locales/be.json"; // білоруська
 
 i18n
   .use(LanguageDetector)
@@ -38,13 +39,37 @@ i18n
       hi: { translation: hi },
       be: { translation: be },
     },
+
+    // Базова мова + жорсткий список підтримуваних,
+    // щоб детектор не підхоплював дивні варіанти типу "en-US-x-auto"
     fallbackLng: "en",
-    interpolation: {
-      escapeValue: false,
-    },
+    supportedLngs: ["en","uk","pl","fr","de","it","es","nl","ro","lt","hr","zh","hi","be"],
+
+    // Щоб ключі не ламались через крапки в назвах
+    keySeparator: false,
+
+    interpolation: { escapeValue: false },
+
+    // Якщо в локалі ключа немає або він порожній — не показувати null/""; візьме фолбек
+    returnNull: false,
+    returnEmptyString: false,
+
+    // Детектор мов: спершу localStorage, потім браузер
     detection: {
       order: ["localStorage", "navigator"],
       caches: ["localStorage"],
+      lookupLocalStorage: "i18nextLng",
+    },
+
+    // Реактові опції (без Suspense — зручно для CSR)
+    react: { useSuspense: false },
+
+    // Корисно під час розробки: логувати відсутні ключі у консоль
+    saveMissing: true,
+    missingKeyHandler: function (lng, ns, key) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(`[i18n] Missing key: ${key} (lng=${lng}, ns=${ns})`);
+      }
     },
   });
 
