@@ -6,14 +6,12 @@ import "../styles/WelcomeScreen.css";
 
 export default function WelcomeScreen() {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="welcome-container">
-      {/* 🔆 Logo glow effect */}
       <div className="logo-glow"></div>
 
-      {/* 🧠 Logo image */}
       <motion.img
         src="/logo.png"
         alt="SmartSlot logo"
@@ -22,7 +20,6 @@ export default function WelcomeScreen() {
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* 🧠 Slogan */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -31,7 +28,6 @@ export default function WelcomeScreen() {
         <p className="ai-powered-text mt-2">{t("slogan")}</p>
       </motion.div>
 
-      {/* 🔐 Login buttons */}
       <motion.div
         className="flex flex-col items-center gap-3 mt-6 w-full max-w-xs"
         initial={{ opacity: 0 }}
@@ -39,6 +35,7 @@ export default function WelcomeScreen() {
         transition={{ delay: 0.6, duration: 1 }}
       >
         <button
+          type="button"
           className="google-button"
           onClick={() => navigate("/email-login")}
         >
@@ -50,26 +47,15 @@ export default function WelcomeScreen() {
           {t("loginWithEmail")}
         </button>
 
-        <GoogleLoginButton text={t("loginWithGoogle")} />
+        <GoogleLoginButton />
       </motion.div>
 
-      {/* 🔍 Explore demo */}
       <motion.button
-        className="explore-btn mt-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 1 }}
-        onClick={() => navigate("/demo")}
-      >
-        {t("exploreDemo")}
-      </motion.button>
-
-      {/* 📝 Register (User) */}
-      <motion.button
+        type="button"
         className="google-button mt-3"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.4, duration: 1 }}
+        transition={{ delay: 1.0, duration: 1 }}
         onClick={() => navigate("/register")}
       >
         <img
@@ -80,12 +66,12 @@ export default function WelcomeScreen() {
         {t("register")}
       </motion.button>
 
-      {/* 🏢 Register (Business) */}
       <motion.button
+        type="button"
         className="google-button mt-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 1 }}
+        transition={{ delay: 1.2, duration: 1 }}
         onClick={() => navigate("/business-register")}
       >
         <img

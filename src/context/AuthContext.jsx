@@ -6,9 +6,8 @@ const LS_KEY = "smartslot.user";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [ready, setReady] = useState(false); // коли контекст ініціалізовано
+  const [ready, setReady] = useState(false);
 
-  // 1) Ініціалізація з localStorage (безпечний парс)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(LS_KEY);
@@ -20,7 +19,6 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // 2) Синхронізація в localStorage
   useEffect(() => {
     try {
       if (user) localStorage.setItem(LS_KEY, JSON.stringify(user));
@@ -30,15 +28,16 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-  // 3) Публічне API
-  // login очікує: { email, name?, provider?, accountType?, companyName?, preferredLang? }
   const login = (userData) => {
-    if (userData && userData.email) setUser(userData);
+    if (userData && userData.email) {
+      setUser(userData);
+    }
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    setUser(null);
+  };
 
-  // ✅ часткове оновлення профілю (для Settings)
   const updateUser = (patch) => {
     setUser((prev) => ({ ...(prev || {}), ...(patch || {}) }));
   };
@@ -50,4 +49,12 @@ export function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+
+  return context;
+}

@@ -6,11 +6,11 @@ import EmailLogin from "./EmailLogin";
 import Dashboard from "./Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import LogoutButton from "./LogoutButton";
-import { useAuth, AuthProvider } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import Register from "./Register";
 import BusinessRegister from "./BusinessRegister";
 import LanguageSwitcher from "./LanguageSwitcher";
-import Settings from "./Settings";                // ✅ ДОДАНО
+import Settings from "./Settings";
 import "../i18n";
 
 function AppInner() {
@@ -49,7 +49,7 @@ function AppInner() {
             }
           />
           <Route
-            path="/settings"                            // ✅ ДОДАНО
+            path="/settings"
             element={
               <ProtectedRoute>
                 <Settings />
@@ -67,9 +67,7 @@ function AppInner() {
 export default function App() {
   return (
     <Router>
-      <AuthProvider>
-        <AppInner />
-      </AuthProvider>
+      <AppInner />
     </Router>
   );
 }

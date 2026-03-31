@@ -1,13 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 
 export default function EmailLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState("login"); // "login" | "register"
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -23,8 +22,7 @@ export default function EmailLogin() {
     setLoading(true);
 
     try {
-      const endpoint = mode === "login" ? "/api/login" : "/api/register";
-      const res = await axios.post(endpoint, { email, password });
+      const res = await axios.post("/api/login", { email, password });
 
       if (res.data?.email) {
         login({
@@ -32,7 +30,9 @@ export default function EmailLogin() {
           name: res.data.name ?? null,
           provider: "local",
           accountType: res.data.accountType ?? "standard",
+          companyName: res.data.companyName ?? null,
         });
+
         navigate("/dashboard");
       } else {
         setError(t("serverError"));
@@ -42,7 +42,8 @@ export default function EmailLogin() {
         err?.response?.data?.error ||
         err?.message ||
         t("serverError");
-      console.error("⛔ Login/Register error:", err?.response?.data || err);
+
+      console.error("⛔ Login error:", err?.response?.data || err);
       setError(message);
     } finally {
       setLoading(false);
@@ -51,9 +52,7 @@ export default function EmailLogin() {
 
   return (
     <div className="welcome-container" style={containerStyle}>
-      <h2 style={titleStyle}>
-        {mode === "login" ? t("loginWithEmail") : t("register")}
-      </h2>
+      <h2 style={titleStyle}>{t("loginWithEmail")}</h2>
 
       {error && <p style={errorStyle}>{error}</p>}
 
@@ -67,6 +66,7 @@ export default function EmailLogin() {
           style={inputStyle}
           disabled={loading}
         />
+
         <input
           type="password"
           placeholder={t("password")}
@@ -78,24 +78,23 @@ export default function EmailLogin() {
         />
 
         <button type="submit" className="btn" disabled={loading}>
-          {loading ? (t("pleaseWait") || "Please wait...") : mode === "login" ? t("login") : t("register")}
+          {loading ? (t("pleaseWait") || "Please wait...") : t("login")}
         </button>
       </form>
 
-      <div style={{ textAlign: "center", marginTop: "16px" }}>
-        <button
-          onClick={() => setMode(mode === "login" ? "register" : "login")}
-          style={toggleBtnStyle}
-          disabled={loading}
-        >
-          {mode === "login" ? t("newUserRegister") : t("alreadyRegisteredLogin")}
-        </button>
+      <div style={linksWrapStyle}>
+        <Link to="/register" style={linkStyle}>
+          {t("newUserRegister")}
+        </Link>
+
+        <Link to="/business-register" style={linkStyle}>
+          {t("businessRegister") || "Business Register"}
+        </Link>
       </div>
     </div>
   );
 }
 
-// 🔽 Стилі
 const containerStyle = {
   maxWidth: "360px",
   width: "100%",
@@ -136,11 +135,16 @@ const inputStyle = {
   outline: "none",
 };
 
-const toggleBtnStyle = {
-  background: "none",
-  border: "none",
+const linksWrapStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+  textAlign: "center",
+  marginTop: "16px",
+};
+
+const linkStyle = {
   color: "#90cdf4",
   textDecoration: "underline",
-  cursor: "pointer",
   fontSize: "14px",
 };

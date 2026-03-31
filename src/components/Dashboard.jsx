@@ -2,7 +2,6 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import ProfileCard from "./ProfileCard";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -14,9 +13,8 @@ export default function Dashboard() {
     navigate("/");
   };
 
-  // Акуратний fallback імені:
   const derivedName =
-    user?.name ?? (user?.email ? user.email.split("@")[0] : t("dashboard.user"));
+    user?.name ?? (user?.email ? user.email.split("@")[0] : "User");
 
   if (!user) {
     return (
@@ -32,25 +30,62 @@ export default function Dashboard() {
   return (
     <div className="welcome-container" style={containerStyle}>
       <div className="glass-box" style={glassStyle}>
-        {/* локалізований шаблон з плейсхолдером {{name}} */}
-        <h2 style={headingStyle}>{t("dashboard.welcome", { name: derivedName })}</h2>
+        <h2 style={headingStyle}>
+          {t("dashboard.welcome", { name: derivedName })}
+        </h2>
 
         {user.email && <p style={emailStyle}>{user.email}</p>}
 
-        {/* ✅ картка профілю */}
-        <div style={{ marginBottom: 16 }}>
-          <ProfileCard />
+        <div style={gridStyle}>
+          <div style={cardStyle}>
+            <h3 style={cardTitleStyle}>Leads</h3>
+            <p style={cardTextStyle}>Manage your client leads and statuses.</p>
+            <button className="btn" onClick={() => navigate("/leads")}>
+              Open Leads
+            </button>
+          </div>
+
+          <div style={cardStyle}>
+            <h3 style={cardTitleStyle}>Estimates</h3>
+            <p style={cardTextStyle}>
+              Create and track estimates for your clients.
+            </p>
+            <button className="btn" onClick={() => navigate("/dashboard")}>
+              Coming Soon
+            </button>
+          </div>
+
+          <div style={cardStyle}>
+            <h3 style={cardTitleStyle}>Follow-ups</h3>
+            <p style={cardTextStyle}>
+              Keep track of reminders and pending clients.
+            </p>
+            <button className="btn" onClick={() => navigate("/dashboard")}>
+              Coming Soon
+            </button>
+          </div>
+
+          <div style={cardStyle}>
+            <h3 style={cardTitleStyle}>Settings</h3>
+            <p style={cardTextStyle}>
+              Update your company details and preferences.
+            </p>
+            <button className="btn" onClick={() => navigate("/settings")}>
+              Open Settings
+            </button>
+          </div>
         </div>
 
-        <button className="btn" onClick={handleLogout}>
-          {t("dashboard.logout")}
-        </button>
+        <div style={{ marginTop: 24 }}>
+          <button className="btn" onClick={handleLogout}>
+            {t("dashboard.logout")}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-// 🔽 Інлайн-стилі
 const containerStyle = {
   minHeight: "100vh",
   display: "flex",
@@ -66,7 +101,7 @@ const glassStyle = {
   background: "rgba(255, 255, 255, 0.05)",
   boxShadow: "0 4px 24px rgba(0, 0, 0, 0.5)",
   textAlign: "center",
-  maxWidth: "420px", // трохи ширше, щоб картка виглядала краще
+  maxWidth: "900px",
   width: "100%",
   color: "white",
 };
@@ -83,4 +118,32 @@ const emailStyle = {
   marginBottom: "24px",
   opacity: 0.85,
   wordBreak: "break-all",
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: "16px",
+  marginTop: "24px",
+};
+
+const cardStyle = {
+  padding: "20px",
+  borderRadius: "14px",
+  background: "rgba(255,255,255,0.06)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  textAlign: "left",
+};
+
+const cardTitleStyle = {
+  fontSize: "18px",
+  fontWeight: "600",
+  marginBottom: "8px",
+};
+
+const cardTextStyle = {
+  fontSize: "14px",
+  opacity: 0.9,
+  marginBottom: "14px",
+  lineHeight: 1.5,
 };

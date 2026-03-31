@@ -2,12 +2,10 @@ import fs from "fs/promises";
 import path from "path";
 import bcrypt from "bcryptjs";
 
-// Базові шляхи
-const BUNDLED_USERS = path.join(process.cwd(), "server", "users.json"); // read-only
-const TMP_USERS = path.join("/tmp", "users.json");                      // read/write (ефемерно)
+const BUNDLED_USERS = path.join(process.cwd(), "server", "users.json");
+const TMP_USERS = path.join("/tmp", "users.json");
 
 async function ensureTmpSeeded() {
-  // якщо /tmp/users.json відсутній — скопіюємо його з бандла
   try {
     await fs.access(TMP_USERS);
   } catch {
@@ -16,7 +14,6 @@ async function ensureTmpSeeded() {
       await fs.writeFile(TMP_USERS, data, "utf8");
     } catch (e) {
       console.error("⛔ Не вдалося підготувати /tmp/users.json:", e);
-      // якщо навіть прочитати бандл не вдалось — ініціюємо пустим масивом
       await fs.writeFile(TMP_USERS, "[]", "utf8");
     }
   }
@@ -24,6 +21,7 @@ async function ensureTmpSeeded() {
 
 async function readUsers() {
   await ensureTmpSeeded();
+
   try {
     const data = await fs.readFile(TMP_USERS, "utf8");
     return JSON.parse(data);
@@ -49,23 +47,43 @@ export default async function handler(req, res) {
 
   const { name, companyName, email, password } = req.body || {};
 
-  if (!name || !companyName || !email || !password) {
+  const normalizedName = name?.trim();
+  const normalizedCompanyName = companyName?.trim();
+  const normalizedEmail = email?.trim().toLowerCase();
+  const normalizedPassword = password?.trim();
+
+  if (
+    !normalizedName ||
+    !normalizedCompanyName ||
+    !normalizedEmail ||
+    !normalizedPassword
+  ) {
     return res.status(400).json({ error: "All fields are required" });
+  }
+
+  if (normalizedPassword.length < 6) {
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 6 characters long" });
   }
 
   try {
     const users = await readUsers();
 
-    if (users.find((u) => u.email === email)) {
+    const existingUser = users.find(
+      (u) => u.email?.trim().toLowerCase() === normalizedEmail
+    );
+
+    if (existingUser) {
       return res.status(409).json({ error: "Email already registered" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(normalizedPassword, 12);
 
     const newUser = {
-      name,
-      companyName,
-      email,
+      name: normalizedName,
+      companyName: normalizedCompanyName,
+      email: normalizedEmail,
       password: hashedPassword,
       accountType: "business",
     };

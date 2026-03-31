@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
@@ -14,23 +14,23 @@ export default function BusinessRegister() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setError("");
 
     if (!name || !companyName || !email || !password) {
-      setError("Please fill in all fields.");
+      setError(t("fillAllFields") || "Please fill in all fields.");
       return;
     }
 
-    try {
-      // Автоматично визначає базовий URL
-      const API_URL = `${
-        import.meta.env.VITE_API_BASE || ""
-      }/api/register-business`;
+    setLoading(true);
 
-      const res = await axios.post(API_URL, {
+    try {
+      const res = await axios.post("/api/register-business", {
         name,
         companyName,
         email,
@@ -41,81 +41,147 @@ export default function BusinessRegister() {
         login({
           name: res.data.name,
           email: res.data.email,
-          companyName: res.data.companyName,
-          accountType: "business",
+          companyName: res.data.companyName ?? companyName,
+          accountType: res.data.accountType ?? "business",
           provider: "local",
         });
+
         navigate("/dashboard");
       } else {
-        setError("Unexpected server response.");
+        setError(t("serverError") || "Unexpected server response.");
       }
     } catch (err) {
-      console.error("Registration error:", err);
-      if (err.response?.data?.error) {
-        setError(err.response.data.error);
-      } else {
-        setError("Unable to connect to server.");
-      }
+      console.error("Business registration error:", err);
+      const serverError =
+        err?.response?.data?.error ||
+        t("serverError") ||
+        "Unable to connect to server.";
+
+      setError(serverError);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="welcome-container">
-      <h2 style={{ color: "#fff", marginBottom: "1rem" }}>
-        {t("registerBusiness")}
-      </h2>
+    <div className="welcome-container" style={containerStyle}>
+      <h2 style={titleStyle}>{t("registerBusiness")}</h2>
 
-      {error && (
-        <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>
-      )}
+      {error && <p style={errorStyle}>{error}</p>}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} style={formStyle}>
         <input
           type="text"
           placeholder={t("name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="btn"
+          style={inputStyle}
+          disabled={loading}
         />
+
         <input
           type="text"
           placeholder={t("companyName")}
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
           required
-          className="btn"
+          style={inputStyle}
+          disabled={loading}
         />
+
         <input
           type="email"
           placeholder={t("email")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="btn"
+          style={inputStyle}
+          disabled={loading}
         />
+
         <input
           type="password"
           placeholder={t("password")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="btn"
+          style={inputStyle}
+          disabled={loading}
         />
-        <button type="submit" className="google-button">
-          {t("register")}
+
+        <button type="submit" className="btn" disabled={loading}>
+          {loading ? (t("pleaseWait") || "Please wait...") : t("register")}
         </button>
       </form>
 
-      <p style={{ marginTop: "1rem", color: "#ccc" }}>
-        {t("already")}{" "}
-        <span
-          onClick={() => navigate("/email-login")}
-          style={{ color: "#50c5ff", cursor: "pointer" }}
-        >
-          {t("login")}
-        </span>
-      </p>
+      <div style={linksWrapStyle}>
+        <p style={textStyle}>
+          {t("already")}{" "}
+          <Link to="/email-login" style={linkStyle}>
+            {t("login")}
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
+
+const containerStyle = {
+  maxWidth: "360px",
+  width: "100%",
+  padding: "24px",
+  background: "rgba(255, 255, 255, 0.05)",
+  borderRadius: "16px",
+  backdropFilter: "blur(16px)",
+  boxShadow: "0 4px 24px rgba(0, 0, 0, 0.4)",
+  color: "white",
+  zIndex: 10,
+};
+
+const titleStyle = {
+  fontSize: "22px",
+  marginBottom: "16px",
+  fontWeight: "600",
+};
+
+const errorStyle = {
+  color: "#ff6666",
+  marginBottom: "12px",
+  textAlign: "center",
+};
+
+const formStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "14px",
+};
+
+const inputStyle = {
+  padding: "12px",
+  borderRadius: "12px",
+  border: "1px solid rgba(255,255,255,0.2)",
+  background: "rgba(255,255,255,0.08)",
+  color: "white",
+  backdropFilter: "blur(8px)",
+  outline: "none",
+};
+
+const linksWrapStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+  textAlign: "center",
+  marginTop: "16px",
+};
+
+const textStyle = {
+  margin: 0,
+  color: "#ccc",
+};
+
+const linkStyle = {
+  color: "#90cdf4",
+  textDecoration: "underline",
+  fontSize: "14px",
+};

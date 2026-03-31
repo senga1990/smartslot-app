@@ -2,15 +2,31 @@ import fs from "fs/promises";
 import path from "path";
 import bcrypt from "bcryptjs";
 
-// Шлях до users.json у /server
-const USERS_FILE = path.join(process.cwd(), "server", "users.json");
+const BUNDLED_USERS = path.join(process.cwd(), "server", "users.json");
+const TMP_USERS = path.join("/tmp", "users.json");
+
+async function ensureTmpSeeded() {
+  try {
+    await fs.access(TMP_USERS);
+  } catch {
+    try {
+      const data = await fs.readFile(BUNDLED_USERS, "utf8");
+      await fs.writeFile(TMP_USERS, data, "utf8");
+    } catch (e) {
+      console.error("⛔ Не вдалося підготувати /tmp/users.json:", e);
+      await fs.writeFile(TMP_USERS, "[]", "utf8");
+    }
+  }
+}
 
 async function readUsers() {
+  await ensureTmpSeeded();
+
   try {
-    const data = await fs.readFile(USERS_FILE, "utf8");
+    const data = await fs.readFile(TMP_USERS, "utf8");
     return JSON.parse(data);
   } catch (err) {
-    console.error("⛔ Не вдалося прочитати users.json:", err);
+    console.error("⛔ Не вдалося прочитати /tmp/users.json:", err);
     return [];
   }
 }
@@ -20,20 +36,26 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { email, password } = req.body;
+  const { email, password } = req.body || {};
 
-  if (!email || !password) {
+  const normalizedEmail = email?.trim().toLowerCase();
+  const normalizedPassword = password?.trim();
+
+  if (!normalizedEmail || !normalizedPassword) {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
   const users = await readUsers();
-  const user = users.find((u) => u.email === email);
+
+  const user = users.find(
+    (u) => u.email?.trim().toLowerCase() === normalizedEmail
+  );
 
   if (!user) {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(normalizedPassword, user.password);
   if (!isMatch) {
     return res.status(401).json({ error: "Invalid credentials" });
   }
