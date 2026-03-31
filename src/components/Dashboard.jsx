@@ -89,9 +89,11 @@ export default function Dashboard() {
 const containerStyle = {
   minHeight: "100vh",
   display: "flex",
-  alignItems: "center",
+  alignItems: "flex-start",
   justifyContent: "center",
   background: "transparent",
+  padding: "100px 20px 40px",
+  overflowY: "auto",
 };
 
 const glassStyle = {
@@ -104,6 +106,7 @@ const glassStyle = {
   maxWidth: "900px",
   width: "100%",
   color: "white",
+  marginBottom: "40px",
 };
 
 const headingStyle = {
